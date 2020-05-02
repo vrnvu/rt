@@ -15,6 +15,6 @@ impl Ray {
   }
 
   pub fn at(&self, t: f32) -> Vec3 {
-    return Vec3::add_scalar(&self.origin, self.direction * t);
+    return self.origin + self.direction * t;
   }
 }
