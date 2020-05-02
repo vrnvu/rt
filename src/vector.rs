@@ -1,6 +1,21 @@
 #[derive(Debug, Copy, Clone)]
 pub struct Vec3(pub f32, pub f32, pub f32);
 
+impl PartialEq for Vec3 {
+  fn eq(&self, other: &Vec3) -> bool {
+    let delta = 0.00001;
+    if (self.0 - other.0).abs() <= delta
+      && (self.1 - other.1).abs() <= delta
+      && (self.2 - other.2).abs() <= delta
+    {
+      true
+    } else {
+      false
+    }
+  }
+}
+impl Eq for Vec3 {}
+
 impl Vec3 {
   pub fn new() -> Vec3 {
     Vec3(0.0, 0.0, 0.0)
@@ -31,7 +46,7 @@ impl std::ops::AddAssign<f32> for Vec3 {
 impl std::ops::Mul<f32> for Vec3 {
   type Output = Self;
   fn mul(self, scalar: f32) -> Self {
-    Vec3(self.0 + scalar, self.1 + scalar, self.2 + scalar)
+    Vec3(self.0 * scalar, self.1 * scalar, self.2 * scalar)
   }
 }
 
@@ -56,4 +71,54 @@ pub fn add(a: &Vec3, b: &Vec3) -> Vec3 {
 
 pub fn sub(a: &Vec3, b: &Vec3) -> Vec3 {
   Vec3(a.0 - b.0, a.1 - b.1, a.2 - b.2)
+}
+
+#[test]
+pub fn add_vec() {
+  let v0 = Vec3(2.0, 3.0, 1.0);
+  let v1 = Vec3(1.0, -1.0, 2.0);
+  let actual = add(&v0, &v1);
+  let expected = Vec3(3.0, 2.0, 3.0);
+  assert_eq!(actual, expected);
+}
+
+#[test]
+pub fn add_vec2() {
+  let v0 = Vec3(-2.0, -3.5, -1.0);
+  let v1 = Vec3(-1.0, -1.5, 2.0);
+  let actual = add(&v0, &v1);
+  let expected = Vec3(-3.0, -5.0, 1.0);
+  assert_eq!(actual, expected);
+}
+
+#[test]
+pub fn ops_add() {
+  let v0 = Vec3(-2.0, -3.5, -1.0);
+  let actual = v0 + 2.0;
+  let expected = Vec3(0.0, -1.5, 1.0);
+  assert_eq!(actual, expected);
+}
+
+#[test]
+pub fn ops_mul() {
+  let v0 = Vec3(-2.0, -3.5, -1.0);
+  let actual = v0 * 2.0;
+  let expected = Vec3(-4.0, -7.0, -2.0);
+  assert_eq!(actual, expected);
+}
+
+#[test]
+pub fn ops_add_assign() {
+  let mut v0 = Vec3(-2.0, -3.5, -1.0);
+  v0 += 2.0;
+  let expected = Vec3(0.0, -1.5, 1.0);
+  assert_eq!(v0, expected);
+}
+
+#[test]
+pub fn ops_mul_assign() {
+  let mut v0 = Vec3(-2.0, -3.5, -1.0);
+  v0 *= 2.0;
+  let expected = Vec3(-4.0, -7.0, -2.0);
+  assert_eq!(v0, expected);
 }
