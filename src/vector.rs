@@ -1,9 +1,28 @@
 #[derive(Debug, Copy, Clone)]
 pub struct Vec3(pub f32, pub f32, pub f32);
 
+impl Vec3 {
+  pub fn new() -> Vec3 {
+    Vec3(0.0, 0.0, 0.0)
+  }
+  pub fn write(&self) {
+    let i0 = (256.0 * self.0) as i32;
+    let i1 = (256.0 * self.1) as i32;
+    let i2 = (256.0 * self.2) as i32;
+    println!("{} {} {}", i0, i1, i2);
+  }
+  pub fn length(&self) -> f32 {
+    (square(self.0) + square(self.1) + square(self.2)).sqrt()
+  }
+}
+
+fn square(x: f32) -> f32 {
+  x * x
+}
+
 impl PartialEq for Vec3 {
   fn eq(&self, other: &Vec3) -> bool {
-    let delta = 0.00001;
+    let delta = 0.0005;
     if (self.0 - other.0).abs() <= delta
       && (self.1 - other.1).abs() <= delta
       && (self.2 - other.2).abs() <= delta
@@ -15,18 +34,6 @@ impl PartialEq for Vec3 {
   }
 }
 impl Eq for Vec3 {}
-
-impl Vec3 {
-  pub fn new() -> Vec3 {
-    Vec3(0.0, 0.0, 0.0)
-  }
-  pub fn write(&self) {
-    let i0 = (256.0 * self.0) as i32;
-    let i1 = (256.0 * self.1) as i32;
-    let i2 = (256.0 * self.2) as i32;
-    println!("{} {} {}", i0, i1, i2);
-  }
-}
 
 impl std::ops::Add<f32> for Vec3 {
   type Output = Self;
@@ -65,12 +72,23 @@ impl std::ops::Neg for Vec3 {
   }
 }
 
+impl std::ops::Div<f32> for Vec3 {
+  type Output = Self;
+  fn div(self, scalar: f32) -> Self {
+    self * (1.0 / scalar)
+  }
+}
+
 pub fn add(a: &Vec3, b: &Vec3) -> Vec3 {
   Vec3(a.0 + b.0, a.1 + b.1, a.2 + b.2)
 }
 
 pub fn sub(a: &Vec3, b: &Vec3) -> Vec3 {
   Vec3(a.0 - b.0, a.1 - b.1, a.2 - b.2)
+}
+
+pub fn unit_vector(vec: Vec3) -> Vec3 {
+  vec / vec.length()
 }
 
 #[test]
@@ -121,4 +139,24 @@ pub fn ops_mul_assign() {
   v0 *= 2.0;
   let expected = Vec3(-4.0, -7.0, -2.0);
   assert_eq!(v0, expected);
+}
+
+#[test]
+pub fn test_square() {
+  let actual = square(2.0);
+  assert_eq!(4.0, actual);
+}
+
+#[test]
+pub fn vec_length() {
+  let vector = Vec3(1.0, 2.0, 3.0);
+  let actual = vector.length();
+  assert_eq!(3.7416575, actual);
+}
+
+#[test]
+pub fn unit_vec() {
+  let vector = Vec3(2.0, 3.0, 5.0);
+  let actual = unit_vector(vector);
+  assert_eq!(Vec3::new(), actual);
 }
