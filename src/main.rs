@@ -7,6 +7,7 @@ use ray::Ray;
 use sphere::Hittable;
 use sphere::Sphere;
 use sphere::World;
+use vector::random_in_unit_sphere;
 use vector::Vec3;
 
 fn main() {
@@ -22,9 +23,16 @@ fn print_ppm_header(image_width: i32, image_height: i32) {
     println!("255");
 }
 
-fn ray_color<T: Hittable>(ray: Ray, world: &World<T>) -> Vec3 {
+fn ray_color<T: Hittable>(ray: Ray, world: &World<T>, depth: i32) -> Vec3 {
+    if depth <= 0 {
+        return Vec3::new();
+    }
+
     if let Some(rec) = world.hit(&ray, 0.0, std::f32::INFINITY) {
-        vector::add(rec.normal, Vec3(1.0, 1.0, 1.0)) * 0.5
+        let normal_p = vector::add(rec.normal, rec.p);
+        let target = vector::add(normal_p, random_in_unit_sphere());
+        let r = Ray::new(rec.p, vector::sub(&target, &rec.p));
+        return ray_color(r, &world, depth - 1) * 0.5;
     } else {
         let unit_direction = vector::unit_vector(ray.direction);
         let t = 0.5 * (unit_direction.1 + 1.0);
@@ -42,7 +50,7 @@ fn basic_gradient(image_width: i32, image_height: i32, samples_per_pixel: i32) {
     print_ppm_header(image_width, image_height);
 
     let camera = Camera::new();
-
+    let max_depth = 50;
     let world: World<Sphere> = World {
         spheres: vec![
             Sphere::new(0.0, 0.0, -1.0, 0.5),
@@ -58,7 +66,7 @@ fn basic_gradient(image_width: i32, image_height: i32, samples_per_pixel: i32) {
                 let v = j as f32 / image_height as f32;
                 let ray = camera.get_ray(u, v);
                 // += to base color 0,0,0
-                color = vector::add(color, ray_color(ray, &world));
+                color = vector::add(color, ray_color(ray, &world, max_depth));
             }
             color.write(samples_per_pixel);
         }

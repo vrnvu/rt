@@ -1,5 +1,8 @@
 #![allow(dead_code)]
 
+extern crate rand;
+use rand::Rng;
+
 #[derive(Debug, Copy, Clone)]
 pub struct Vec3(pub f32, pub f32, pub f32);
 
@@ -41,6 +44,24 @@ fn clamp(x: f32, min: f32, max: f32) -> f32 {
 
 fn square(x: f32) -> f32 {
   x * x
+}
+
+pub fn random_in_unit_sphere() -> Vec3 {
+  loop {
+    let p = random(-1.0, 1.0);
+    if p.length_squared() < 1.0 {
+      return p;
+    }
+  }
+}
+
+fn random(min: f32, max: f32) -> Vec3 {
+  let mut rng = rand::thread_rng();
+  Vec3(
+    rng.gen_range(min, max),
+    rng.gen_range(min, max),
+    rng.gen_range(min, max),
+  )
 }
 
 impl PartialEq for Vec3 {
