@@ -79,7 +79,7 @@ impl std::ops::Div<f32> for Vec3 {
   }
 }
 
-pub fn add(a: &Vec3, b: &Vec3) -> Vec3 {
+pub fn add(a: Vec3, b: Vec3) -> Vec3 {
   Vec3(a.0 + b.0, a.1 + b.1, a.2 + b.2)
 }
 
@@ -95,7 +95,7 @@ pub fn unit_vector(vec: Vec3) -> Vec3 {
 pub fn add_vec() {
   let v0 = Vec3(2.0, 3.0, 1.0);
   let v1 = Vec3(1.0, -1.0, 2.0);
-  let actual = add(&v0, &v1);
+  let actual = add(v0, v1);
   let expected = Vec3(3.0, 2.0, 3.0);
   assert_eq!(actual, expected);
 }
@@ -104,7 +104,7 @@ pub fn add_vec() {
 pub fn add_vec2() {
   let v0 = Vec3(-2.0, -3.5, -1.0);
   let v1 = Vec3(-1.0, -1.5, 2.0);
-  let actual = add(&v0, &v1);
+  let actual = add(v0, v1);
   let expected = Vec3(-3.0, -5.0, 1.0);
   assert_eq!(actual, expected);
 }
