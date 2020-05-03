@@ -11,7 +11,7 @@ impl Vec3 {
     Vec3(0.0, 0.0, 0.0)
   }
   pub fn write(&self, samples_per_pixel: i32) {
-    let scale = 1.0 / samples_per_pixel as f32;
+    let scale = 1.0 as f32 / samples_per_pixel as f32;
     let r = (scale * self.0).sqrt();
     let g = (scale * self.1).sqrt();
     let b = (scale * self.2).sqrt();

@@ -1,7 +1,11 @@
+extern crate rand;
+use rand::Rng;
+
 mod camera;
 mod ray;
 mod sphere;
 mod vector;
+
 use camera::Camera;
 use ray::Ray;
 use sphere::Hittable;
@@ -11,10 +15,10 @@ use vector::random_in_unit_sphere;
 use vector::Vec3;
 
 fn main() {
-    let image_width = 200;
-    let image_height = 100;
+    let image_width = 400;
+    let image_height = 200;
     let samples_per_pixel = 100;
-    basic_gradient(image_width, image_height, samples_per_pixel);
+    render(image_width, image_height, samples_per_pixel);
 }
 
 fn print_ppm_header(image_width: i32, image_height: i32) {
@@ -42,7 +46,7 @@ fn ray_color<T: Hittable>(ray: Ray, world: &World<T>, depth: i32) -> Vec3 {
     }
 }
 
-fn basic_gradient(image_width: i32, image_height: i32, samples_per_pixel: i32) {
+fn render(image_width: i32, image_height: i32, samples_per_pixel: i32) {
     // 0,0,0 is the origin / eye of the camera / pov
     // y axis goes up and x axis goes to the right, into the screen negative z
     // we traverse from the lower left and use two offset vectors (u, v)
@@ -62,8 +66,8 @@ fn basic_gradient(image_width: i32, image_height: i32, samples_per_pixel: i32) {
         for i in 0..image_width {
             let mut color = Vec3::new();
             for _ in 0..samples_per_pixel {
-                let u = i as f32 / image_width as f32;
-                let v = j as f32 / image_height as f32;
+                let u = (i as f32 + random()) / image_width as f32;
+                let v = (j as f32 + random()) / image_height as f32;
                 let ray = camera.get_ray(u, v);
                 // += to base color 0,0,0
                 color = vector::add(color, ray_color(ray, &world, max_depth));
@@ -71,4 +75,9 @@ fn basic_gradient(image_width: i32, image_height: i32, samples_per_pixel: i32) {
             color.write(samples_per_pixel);
         }
     }
+}
+
+fn random() -> f32 {
+    let mut rng = rand::thread_rng();
+    rng.gen_range(0.0, 1.0)
 }
