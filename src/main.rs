@@ -75,9 +75,8 @@ fn _ray_color(ray: Ray) -> Vec3 {
     }
 }
 
-fn ray_color(ray: Ray, world: &World<Sphere>) -> Vec3 {
-    let mut rec = sphere::HitRecord::new();
-    if world.hit(&ray, 0.0, std::f32::INFINITY, &mut rec) {
+fn ray_color(ray: Ray, world: &World) -> Vec3 {
+    if let Some(rec) = world.hit(&ray, 0.0, std::f32::INFINITY) {
         vector::add(rec.normal, Vec3(1.0, 1.0, 1.0)) * 0.5
     } else {
         let unit_direction = vector::unit_vector(ray.direction);
@@ -100,8 +99,8 @@ fn basic_gradient(image_width: i32, image_height: i32) {
     let vertical = Vec3(0.0, 2.0, 0.0);
     let origin = Vec3(0.0, 0.0, 0.0);
 
-    let world: World<Sphere> = World {
-        hittables: vec![
+    let world: World = World {
+        spheres: vec![
             Sphere::new(0.0, 0.0, -1.0, 0.5),
             Sphere::new(0.0, -100.5, -1.0, 100.0),
         ],

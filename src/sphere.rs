@@ -30,7 +30,7 @@ impl HitRecord {
   }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Sphere {
   pub center: Vec3,
   pub radius: f32,
@@ -43,14 +43,8 @@ impl Sphere {
       radius: radius,
     }
   }
-}
-
-pub trait Hittable {
-  fn hit(self, ray: &Ray, tmin: f32, tmax: f32, hit_record: &mut HitRecord) -> bool;
-}
-
-impl Hittable for Sphere {
-  fn hit(self, ray: &Ray, t_min: f32, t_max: f32, hit_record: &mut HitRecord) -> bool {
+  pub fn hit(self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    let mut hit_record = HitRecord::new();
     let oc = vector::sub(&ray.origin, &self.center);
     let a = ray.direction.length_squared();
     let half_b = vector::dot(&oc, &ray.direction);
@@ -64,7 +58,7 @@ impl Hittable for Sphere {
         hit_record.p = ray.at(temp);
         let outward_normal = vector::sub(&hit_record.p, &self.center) / self.radius;
         hit_record.set_face_normal(&ray, &outward_normal);
-        true
+        Some(hit_record)
       } else {
         let temp = (-half_b + root) / a;
         if temp < t_max && temp > t_min {
@@ -72,34 +66,36 @@ impl Hittable for Sphere {
           hit_record.p = ray.at(temp);
           let outward_normal = vector::sub(&hit_record.p, &self.center) / self.radius;
           hit_record.set_face_normal(&ray, &outward_normal);
-          true
+          Some(hit_record)
         } else {
-          false
+          None
         }
       }
     } else {
-      false
+      None
     }
   }
 }
 
-pub struct World<T: Hittable> {
-  hittables: Vec<T>,
+pub trait Hittable {
+  fn hit(&self, ray: &Ray, tmin: f32, tmax: f32) -> Option<HitRecord>;
 }
 
-impl Hittable for World<Sphere> {
-  fn hit(self, ray: &Ray, t_min: f32, t_max: f32, hit_record: &mut HitRecord) -> bool {
-    let mut temp_rec = HitRecord::new();
-    let mut hit_anything = false;
-    let closest_so_far = t_max;
+pub struct World {
+  pub spheres: Vec<Sphere>,
+}
 
-    for e in self.hittables {
-      if e.hit(&ray, t_min, closest_so_far, &mut temp_rec) {
-        hit_anything = true;
+impl Hittable for World {
+  fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    let mut hit_record = None;
+    let mut closest_so_far = t_max;
+
+    for e in &self.spheres {
+      if let Some(temp_rec) = e.hit(&ray, t_min, closest_so_far) {
         closest_so_far = temp_rec.t;
-        hit_record = &mut temp_rec;
+        hit_record = Some(temp_rec);
       }
     }
-    hit_anything
+    hit_record
   }
 }
