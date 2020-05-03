@@ -23,6 +23,12 @@ fn print_ppm_header(image_width: i32, image_height: i32) {
 }
 
 fn ray_color(ray: Ray) -> Vec3 {
+    // Linearly blend white and blue depending on the height of the y coord
+    // after scaling the ray direction to unit length (-1 < y < 1)
+    // 0.0 <= t <= 1.0, when t = 1 we want blue, when 0 we want white.
+    // In between we want a blend, this forms a linear blend / interpolation
+    // or lerp for short.
+    // blended_value = (1-t) * start_value + t * end_value
     let unit_direction = vector::unit_vector(ray.direction);
     let t = 0.5 * (unit_direction.1 + 1.0);
     let start_value = Vec3(1.0, 1.0, 1.0);
@@ -31,10 +37,14 @@ fn ray_color(ray: Ray) -> Vec3 {
 }
 
 fn basic_gradient(image_width: i32, image_height: i32) {
+    // 0,0,0 is the origin / eye of the camera / pov
+    // y axis goes up and x axis goes to the right, into the screen negative z
+    // we traverse from the lower left and use two offset vectors (u, v)
+    // to move the ray endpoint across the screen.
     print_ppm_header(image_width, image_height);
     let lower_left_corner = Vec3(-2.0, -1.0, -1.0);
-    let horizontal = Vec3(8.0, 0.0, 0.0);
-    let vertical = Vec3(0.0, 4.0, 0.0);
+    let horizontal = Vec3(4.0, 0.0, 0.0);
+    let vertical = Vec3(0.0, 2.0, 0.0);
     let origin = Vec3(0.0, 0.0, 0.0);
     for j in (0..image_height).rev() {
         for i in 0..image_width {
