@@ -1,6 +1,8 @@
+mod camera;
 mod ray;
 mod sphere;
 mod vector;
+use camera::Camera;
 use ray::Ray;
 use sphere::Hittable;
 use sphere::Sphere;
@@ -8,9 +10,10 @@ use sphere::World;
 use vector::Vec3;
 
 fn main() {
-    let image_width = 1200;
-    let image_height = 600;
-    basic_gradient(image_width, image_height);
+    let image_width = 200;
+    let image_height = 100;
+    let samples_per_pixel = 100;
+    basic_gradient(image_width, image_height, samples_per_pixel);
 }
 
 fn print_ppm_header(image_width: i32, image_height: i32) {
@@ -31,17 +34,14 @@ fn ray_color<T: Hittable>(ray: Ray, world: &World<T>) -> Vec3 {
     }
 }
 
-fn basic_gradient(image_width: i32, image_height: i32) {
+fn basic_gradient(image_width: i32, image_height: i32, samples_per_pixel: i32) {
     // 0,0,0 is the origin / eye of the camera / pov
     // y axis goes up and x axis goes to the right, into the screen negative z
     // we traverse from the lower left and use two offset vectors (u, v)
     // to move the ray endpoint across the screen.
     print_ppm_header(image_width, image_height);
 
-    let lower_left_corner = Vec3(-2.0, -1.0, -1.0);
-    let horizontal = Vec3(4.0, 0.0, 0.0);
-    let vertical = Vec3(0.0, 2.0, 0.0);
-    let origin = Vec3(0.0, 0.0, 0.0);
+    let camera = Camera::new();
 
     let world: World<Sphere> = World {
         spheres: vec![
@@ -52,14 +52,15 @@ fn basic_gradient(image_width: i32, image_height: i32) {
 
     for j in (0..image_height).rev() {
         for i in 0..image_width {
-            let u = i as f32 / image_width as f32;
-            let v = j as f32 / image_height as f32;
-            let direction = vector::add(lower_left_corner, horizontal * u);
-            let ray = Ray::new(origin, vector::add(direction, vertical * v));
-
-            let color = ray_color(ray, &world);
-
-            color.write();
+            let mut color = Vec3::new();
+            for _ in 0..samples_per_pixel {
+                let u = i as f32 / image_width as f32;
+                let v = j as f32 / image_height as f32;
+                let ray = camera.get_ray(u, v);
+                // += to base color 0,0,0
+                color = vector::add(color, ray_color(ray, &world));
+            }
+            color.write(samples_per_pixel);
         }
     }
 }

@@ -7,10 +7,15 @@ impl Vec3 {
   pub fn new() -> Vec3 {
     Vec3(0.0, 0.0, 0.0)
   }
-  pub fn write(&self) {
-    let i0 = (256.0 * self.0) as i32;
-    let i1 = (256.0 * self.1) as i32;
-    let i2 = (256.0 * self.2) as i32;
+  pub fn write(&self, samples_per_pixel: i32) {
+    let scale = 1.0 / samples_per_pixel as f32;
+    let r = scale * self.0;
+    let g = scale * self.1;
+    let b = scale * self.2;
+
+    let i0 = (256.0 * clamp(r, 0.0, 0.999)) as i32;
+    let i1 = (256.0 * clamp(g, 0.0, 0.999)) as i32;
+    let i2 = (256.0 * clamp(b, 0.0, 0.999)) as i32;
     println!("{} {} {}", i0, i1, i2);
   }
   pub fn length(&self) -> f32 {
@@ -22,6 +27,16 @@ impl Vec3 {
   pub fn abs(&self) -> Self {
     Vec3(self.0.abs(), self.1.abs(), self.2.abs())
   }
+}
+
+fn clamp(x: f32, min: f32, max: f32) -> f32 {
+  if x < min {
+    return min;
+  }
+  if x > max {
+    return max;
+  }
+  x
 }
 
 fn square(x: f32) -> f32 {
