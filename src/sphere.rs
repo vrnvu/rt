@@ -43,7 +43,33 @@ impl Sphere {
       radius: radius,
     }
   }
-  pub fn hit(self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+}
+
+pub trait Hittable {
+  fn hit(&self, ray: &Ray, tmin: f32, tmax: f32) -> Option<HitRecord>;
+}
+
+pub struct World<T: Hittable> {
+  pub spheres: Vec<T>,
+}
+
+impl<T: Hittable> Hittable for World<T> {
+  fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    let mut hit_record = None;
+    let mut closest_so_far = t_max;
+
+    for e in &self.spheres {
+      if let Some(temp_rec) = e.hit(&ray, t_min, closest_so_far) {
+        closest_so_far = temp_rec.t;
+        hit_record = Some(temp_rec);
+      }
+    }
+    hit_record
+  }
+}
+
+impl Hittable for Sphere {
+  fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
     let mut hit_record = HitRecord::new();
     let oc = vector::sub(&ray.origin, &self.center);
     let a = ray.direction.length_squared();
@@ -74,28 +100,5 @@ impl Sphere {
     } else {
       None
     }
-  }
-}
-
-pub trait Hittable {
-  fn hit(&self, ray: &Ray, tmin: f32, tmax: f32) -> Option<HitRecord>;
-}
-
-pub struct World {
-  pub spheres: Vec<Sphere>,
-}
-
-impl Hittable for World {
-  fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
-    let mut hit_record = None;
-    let mut closest_so_far = t_max;
-
-    for e in &self.spheres {
-      if let Some(temp_rec) = e.hit(&ray, t_min, closest_so_far) {
-        closest_so_far = temp_rec.t;
-        hit_record = Some(temp_rec);
-      }
-    }
-    hit_record
   }
 }
