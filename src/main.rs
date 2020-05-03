@@ -28,7 +28,7 @@ fn ray_color<T: Hittable>(ray: Ray, world: &World<T>, depth: i32) -> Vec3 {
         return Vec3::new();
     }
 
-    if let Some(rec) = world.hit(&ray, 0.0, std::f32::INFINITY) {
+    if let Some(rec) = world.hit(&ray, 0.001, std::f32::INFINITY) {
         let normal_p = vector::add(rec.normal, rec.p);
         let target = vector::add(normal_p, random_in_unit_sphere());
         let r = Ray::new(rec.p, vector::sub(&target, &rec.p));

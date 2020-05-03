@@ -12,9 +12,9 @@ impl Vec3 {
   }
   pub fn write(&self, samples_per_pixel: i32) {
     let scale = 1.0 / samples_per_pixel as f32;
-    let r = scale * self.0;
-    let g = scale * self.1;
-    let b = scale * self.2;
+    let r = (scale * self.0).sqrt();
+    let g = (scale * self.1).sqrt();
+    let b = (scale * self.2).sqrt();
 
     let i0 = (256.0 * clamp(r, 0.0, 0.999)) as i32;
     let i1 = (256.0 * clamp(g, 0.0, 0.999)) as i32;
