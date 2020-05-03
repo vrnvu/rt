@@ -16,6 +16,9 @@ impl Vec3 {
   pub fn length(&self) -> f32 {
     (square(self.0) + square(self.1) + square(self.2)).sqrt()
   }
+  pub fn length_squared(&self) -> f32 {
+    square(self.0) + square(self.1) + square(self.2)
+  }
   pub fn abs(&self) -> Self {
     Vec3(self.0.abs(), self.1.abs(), self.2.abs())
   }
