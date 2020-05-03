@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 #[derive(Debug, Copy, Clone)]
 pub struct Vec3(pub f32, pub f32, pub f32);
 
