@@ -10,8 +10,8 @@ use ray::Ray;
 use vector::Vec3;
 
 fn main() {
-    let image_width = 800;
-    let image_height = 400;
+    let image_width = 200;
+    let image_height = 100;
     //basic_image(image_width, image_height);
     basic_gradient(image_width, image_height);
 }
@@ -22,7 +22,22 @@ fn print_ppm_header(image_width: i32, image_height: i32) {
     println!("255");
 }
 
+fn hit_sphere(center: Vec3, radius: f32, ray: &Ray) -> bool {
+    // If we solve the quadratic equation
+    // 0 no roots, 1 root or 2 roots
+    // so we check if the discriminant is bigger than 0
+    let oc = vector::sub(&ray.origin, &center);
+    let a = vector::dot(&ray.direction, &ray.direction);
+    let b = vector::dot(&oc, &ray.direction) * 2.0;
+    let c = vector::dot(&oc, &oc) - radius * radius;
+    let discriminant = (b * b) - (4.0 * a * c);
+    return discriminant > 0.0;
+}
+
 fn ray_color(ray: Ray) -> Vec3 {
+    if hit_sphere(Vec3(0.0, 0.0, -1.0), 0.5, &ray) {
+        return Vec3(1.0, 0.0, 0.0);
+    }
     // Linearly blend white and blue depending on the height of the y coord
     // after scaling the ray direction to unit length (-1 < y < 1)
     // 0.0 <= t <= 1.0, when t = 1 we want blue, when 0 we want white.

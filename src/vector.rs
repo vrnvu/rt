@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 #[derive(Debug, Copy, Clone)]
 pub struct Vec3(pub f32, pub f32, pub f32);
 
@@ -13,6 +15,9 @@ impl Vec3 {
   }
   pub fn length(&self) -> f32 {
     (square(self.0) + square(self.1) + square(self.2)).sqrt()
+  }
+  pub fn abs(&self) -> Self {
+    Vec3(self.0.abs(), self.1.abs(), self.2.abs())
   }
 }
 
@@ -39,6 +44,13 @@ impl std::ops::Add<f32> for Vec3 {
   type Output = Self;
   fn add(self, scalar: f32) -> Self {
     Vec3(self.0 + scalar, self.1 + scalar, self.2 + scalar)
+  }
+}
+
+impl std::ops::Sub<f32> for Vec3 {
+  type Output = Self;
+  fn sub(self, scalar: f32) -> Self {
+    Vec3(self.0 - scalar, self.1 - scalar, self.2 - scalar)
   }
 }
 
@@ -87,8 +99,28 @@ pub fn sub(a: &Vec3, b: &Vec3) -> Vec3 {
   Vec3(a.0 - b.0, a.1 - b.1, a.2 - b.2)
 }
 
+pub fn mul(a: Vec3, b: Vec3) -> Vec3 {
+  Vec3(a.0 * b.0, a.1 * b.1, a.2 * b.2)
+}
+
+pub fn greater_than(a: Vec3, b: Vec3) -> bool {
+  a.0 > b.0 && a.1 > b.1 && a.2 > b.2
+}
+
 pub fn unit_vector(vec: Vec3) -> Vec3 {
   vec / vec.length()
+}
+
+pub fn dot(u: &Vec3, v: &Vec3) -> f32 {
+  u.0 * v.0 + u.1 * v.1 + u.2 * v.2
+}
+
+pub fn cross(u: &Vec3, v: &Vec3) -> Vec3 {
+  Vec3(
+    u.1 * v.2 - u.2 * v.1,
+    u.2 * v.0 - u.0 * v.2,
+    u.0 * v.1 - u.1 * v.0,
+  )
 }
 
 #[test]
