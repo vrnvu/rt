@@ -44,12 +44,12 @@ pub struct Sphere {
 impl Sphere {
   pub fn new(ox: f32, oy: f32, oz: f32, radius: f32, material: Material) -> Self {
     match material {
-      Material::Metal { albedo } => Sphere {
+      Material::Metal { albedo: _ } => Sphere {
         center: Vec3(ox, oy, oz),
         radius: radius,
         material: material,
       },
-      Material::Lambertian { albedo } => Sphere {
+      Material::Lambertian { albedo: _ } => Sphere {
         center: Vec3(ox, oy, oz),
         radius: radius,
         material: material,

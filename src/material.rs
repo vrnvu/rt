@@ -34,7 +34,7 @@ pub fn new_lambertian(r: f32, g: f32, b: f32) -> Material {
 pub fn scatter(material: &Material, ray: &Ray, hit_record: &HitRecord) -> Option<(Vec3, Ray)> {
   match material {
     Material::Metal { albedo } => scatter_metal(&albedo, &ray, &hit_record),
-    Material::Lambertian { albedo } => scatter_lambertian(&albedo, &ray, &hit_record),
+    Material::Lambertian { albedo } => scatter_lambertian(&albedo, &hit_record),
   }
 }
 
@@ -50,7 +50,7 @@ fn scatter_metal(albedo: &Vec3, ray: &Ray, hit_record: &HitRecord) -> Option<(Ve
   }
 }
 
-fn scatter_lambertian(albedo: &Vec3, ray: &Ray, hit_record: &HitRecord) -> Option<(Vec3, Ray)> {
+fn scatter_lambertian(albedo: &Vec3, hit_record: &HitRecord) -> Option<(Vec3, Ray)> {
   let scattered_direction = vector::add(hit_record.normal, Vec3::new_random_unit());
   let scattered = Ray::new(hit_record.p, scattered_direction);
   let attenuation = *albedo;
