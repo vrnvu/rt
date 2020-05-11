@@ -189,6 +189,13 @@ pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
   sub(v, &dn2)
 }
 
+pub fn refract(uv: &Vec3, n: &Vec3, etai_over_etat: f32) -> Vec3 {
+  let cos_theta = dot(&(-*uv), &n);
+  let r_out_parallel = add(*uv, *n * cos_theta) * etai_over_etat;
+  let r_out_perp = *n * -(1.0 - r_out_parallel.length_squared()).sqrt();
+  add(r_out_parallel, r_out_perp)
+}
+
 #[test]
 pub fn add_vec() {
   let v0 = Vec3(2.0, 3.0, 1.0);

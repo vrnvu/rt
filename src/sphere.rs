@@ -54,6 +54,11 @@ impl Sphere {
         radius: radius,
         material: material,
       },
+      Material::Dielectric { ri: _ } => Sphere {
+        center: Vec3(ox, oy, oz),
+        radius: radius,
+        material: material,
+      },
     }
   }
 }

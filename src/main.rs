@@ -67,7 +67,7 @@ fn render(image_width: i32, image_height: i32, samples_per_pixel: i32) {
                 material::new_lambertian(0.8, 0.8, 0.8),
             ),
             Sphere::new(1.0, 0.0, -1.0, 0.5, material::new_metal(0.8, 0.6, 0.2)),
-            Sphere::new(-1.0, 0.0, -1.0, 0.5, material::new_metal(0.8, 0.8, 0.8)),
+            Sphere::new(-1.0, 0.0, -1.0, 0.5, material::new_dielectric(1.5)),
         ],
     };
 
