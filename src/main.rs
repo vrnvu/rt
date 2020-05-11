@@ -2,16 +2,17 @@ extern crate rand;
 use rand::Rng;
 
 mod camera;
+mod material;
 mod ray;
 mod sphere;
 mod vector;
 
 use camera::Camera;
+use material::Color;
 use ray::Ray;
 use sphere::Hittable;
 use sphere::Sphere;
 use sphere::World;
-use vector::random_in_unit_sphere;
 use vector::Vec3;
 
 fn main() {
@@ -27,16 +28,16 @@ fn print_ppm_header(image_width: i32, image_height: i32) {
     println!("255");
 }
 
-fn ray_color<T: Hittable>(ray: Ray, world: &World<T>, depth: i32) -> Vec3 {
+fn ray_color<T: Hittable>(ray: Ray, world: &World<T>, depth: i32) -> Color {
     if depth <= 0 {
         return Vec3::new();
     }
-
     if let Some(rec) = world.hit(&ray, 0.001, std::f32::INFINITY) {
-        let normal_p = vector::add(rec.normal, rec.p);
-        let target = vector::add(normal_p, random_in_unit_sphere());
-        let r = Ray::new(rec.p, vector::sub(&target, &rec.p));
-        return ray_color(r, &world, depth - 1) * 0.5;
+        if let Some((attenuation, scattered)) = material::scatter(&rec.material, &ray, &rec) {
+            return vector::mul(attenuation, ray_color(scattered, &world, depth - 1));
+        } else {
+            return Vec3::new();
+        }
     } else {
         let unit_direction = vector::unit_vector(ray.direction);
         let t = 0.5 * (unit_direction.1 + 1.0);
@@ -57,8 +58,16 @@ fn render(image_width: i32, image_height: i32, samples_per_pixel: i32) {
     let max_depth = 50;
     let world: World<Sphere> = World {
         spheres: vec![
-            Sphere::new(0.0, 0.0, -1.0, 0.5),
-            Sphere::new(0.0, -100.5, -1.0, 100.0),
+            Sphere::new(0.0, 0.0, -1.0, 0.5, material::new_lambertian(0.7, 0.3, 0.3)),
+            Sphere::new(
+                0.0,
+                -100.5,
+                -1.0,
+                100.0,
+                material::new_lambertian(0.8, 0.8, 0.8),
+            ),
+            Sphere::new(1.0, 0.0, -1.0, 0.5, material::new_metal(0.8, 0.6, 0.2)),
+            Sphere::new(-1.0, 0.0, -1.0, 0.5, material::new_metal(0.8, 0.8, 0.8)),
         ],
     };
 

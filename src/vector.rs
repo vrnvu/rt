@@ -10,6 +10,12 @@ impl Vec3 {
   pub fn new() -> Vec3 {
     Vec3(0.0, 0.0, 0.0)
   }
+  pub fn new_random_unit() -> Vec3 {
+    let a = random_f32(0.0, 2.0 * std::f32::consts::PI);
+    let z = random_f32(-1.0, 1.0);
+    let r = (1.0 - z * z).sqrt();
+    Vec3(r * a.cos(), r * a.sin(), z)
+  }
   pub fn write(&self, samples_per_pixel: i32) {
     let scale = 1.0 as f32 / samples_per_pixel as f32;
     let r = (scale * self.0).sqrt();
@@ -55,6 +61,15 @@ pub fn random_in_unit_sphere() -> Vec3 {
   }
 }
 
+pub fn random_in_hemisphere(normal: &Vec3) -> Vec3 {
+  let in_unit_sphere = random_in_unit_sphere();
+  if dot(&in_unit_sphere, normal) > 0.0 {
+    in_unit_sphere
+  } else {
+    -in_unit_sphere
+  }
+}
+
 fn random(min: f32, max: f32) -> Vec3 {
   let mut rng = rand::thread_rng();
   Vec3(
@@ -62,6 +77,11 @@ fn random(min: f32, max: f32) -> Vec3 {
     rng.gen_range(min, max),
     rng.gen_range(min, max),
   )
+}
+
+fn random_f32(min: f32, max: f32) -> f32 {
+  let mut rng = rand::thread_rng();
+  rng.gen_range(min, max)
 }
 
 impl PartialEq for Vec3 {
@@ -160,6 +180,13 @@ pub fn cross(u: &Vec3, v: &Vec3) -> Vec3 {
     u.2 * v.0 - u.0 * v.2,
     u.0 * v.1 - u.1 * v.0,
   )
+}
+
+pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
+  let d: f32 = dot(v, n);
+  let dn = (*n) * d;
+  let dn2 = dn * 2.0;
+  sub(v, &dn2)
 }
 
 #[test]
