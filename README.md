@@ -24,7 +24,7 @@
 
 - **camera.rs**: General view, simple static implementation with some FOV
 - **material.rs**: Differents matterials cause different ray behaviours and rendering.
-- **ray.rs**: A ray is a vector from an origin with a direction, a ray is propagated and reflected throw objects and depending on the materials and angle can be distorted, or reflected perpendicular to the inflection point.
+- **ray.rs**: A ray is a vector from an origin with a direction, a ray is propagated and reflected through objects and depending on the materials and angle can be distorted, or reflected perpendicular to the inflection point.
 - **sphere.rs**: A sphere is a struct composed by a material, a hitbox and a radius. Behaviour for deducing actual reflaction and ray direction.
 - **vector.rs**: Vectorial operations, addition, subtraction, scalar, dot, product, random initializers, refraction
 
