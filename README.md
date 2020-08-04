@@ -12,7 +12,10 @@
 - Positionable camera and blur
 - Spheres (easily expanded to different polygons)
 - Metal, opaque, diffuse and lambertian materials.
-- Antialising, fuzzy reflection, mirrored light reflection, gamma correction for accurate color intensity
+- Antialising
+- Fuzzy reflection
+- Mirrored light reflection
+- Gamma correction for accurate color intensity
 
 ![ray](https://upload.wikimedia.org/wikipedia/commons/b/b2/RaysViewportSchema.png "Ray")
 
